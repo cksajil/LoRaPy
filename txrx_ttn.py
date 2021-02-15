@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-#
-# TTN Connection (SEND & RECEIVE) for Raspberry Pi & Adafruit 4074.
+
+# btemperli, 14.2.2021
 
 import sys
 from time import sleep
@@ -8,6 +8,7 @@ from SX127x.LoRa import *
 from SX127x.LoRaArgumentParser import LoRaArgumentParser
 from SX127x.board_config_ada import BOARD
 import keys
+import counter
 import LoRaWAN
 from LoRaWAN.MHDR import MHDR
 import reset_ada
@@ -37,7 +38,8 @@ class LoRaWanSystem(LoRa):
         print(lorawan.get_mic())
         print(lorawan.compute_mic())
         print(lorawan.valid_mic())
-        print("".join(list(map(chr, lorawan.get_payload()))))
+        raw_payload = "".join(list(map(chr, lorawan.get_payload())))
+        print(raw_payload)
         print("\n")
 
         self.set_mode(MODE.SLEEP)
@@ -58,7 +60,7 @@ class LoRaWanSystem(LoRa):
 
     def do_send(self):
         lorawan = LoRaWAN.new(keys.nwskey, keys.appskey)
-        lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': keys.devaddr, 'fcnt': 1, 'data': list(map(ord, 'Python rules always!')) })
+        lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': keys.devaddr, 'fcnt': counter.get_current(), 'data': list(map(ord, 'Python rocks!'))})
 
         self.write_payload(lorawan.to_raw())
         self.set_mode(MODE.TX)
@@ -66,7 +68,7 @@ class LoRaWanSystem(LoRa):
             sleep(1)
 
 
-# Init
+# First: Send
 lora = LoRaWanSystem(False)
 
 # Setup
