@@ -61,3 +61,4 @@ Sends an uplink and receives directly after a downlink.
 - [ ] Check OTAA for TTN
 - [ ] Remove Helium
 - [ ] TTN v3
+- [ ] move `./LoRaWAN` & `./SX127x` to git submodule (if possible...)
