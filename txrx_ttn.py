@@ -43,6 +43,7 @@ class LoRaWanSystem(LoRa):
         self.set_mode(MODE.SLEEP)
         self.reset_ptr_rx()
         self.set_mode(MODE.RXCONT)
+        sys.exit(0)
 
     def on_tx_done(self):
         self.clear_irq_flags(TxDone=1)
