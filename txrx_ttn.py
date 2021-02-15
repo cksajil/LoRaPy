@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 #
-# TTN Connection (RECEIVE) for Raspberry Pi & Adafruit 4074.
+# TTN Connection (SEND & RECEIVE) for Raspberry Pi & Adafruit 4074.
 
+import sys
 from time import sleep
 from SX127x.LoRa import *
 from SX127x.LoRaArgumentParser import LoRaArgumentParser
 from SX127x.board_config_ada import BOARD
-import LoRaWAN
 import keys
+import LoRaWAN
+from LoRaWAN.MHDR import MHDR
 import reset_ada
 
 BOARD.setup()
-parser = LoRaArgumentParser("LoRaWAN receiver")
+parser = LoRaArgumentParser("LoRaWAN sendReceive")
 
 
-class LoRaWANrcv(LoRa):
-    def __init__(self, verbose = False):
-        super(LoRaWANrcv, self).__init__(verbose)
+class LoRaWanSystem(LoRa):
+    def __init__(self, devaddr = [], nwkey = [], appkey = [], verbose = False):
+        super(LoRaWanSystem, self).__init__(verbose)
+        self.devaddr = devaddr
+        self.nwkey = nwkey
+        self.appkey = appkey
 
     def on_rx_done(self):
         print("RxDone")
@@ -39,22 +44,37 @@ class LoRaWANrcv(LoRa):
         self.reset_ptr_rx()
         self.set_mode(MODE.RXCONT)
 
-    def start(self):
+    def on_tx_done(self):
+        self.clear_irq_flags(TxDone=1)
+        print("TxDone\n")
+        print("Receiving LoRaWAN message\n")
+
+        self.set_mode(MODE.STDBY)
+        self.set_dio_mapping([0] * 6)
+        self.set_invert_iq(1)
         self.reset_ptr_rx()
         self.set_mode(MODE.RXCONT)
+
+    def do_send(self):
+        lorawan = LoRaWAN.new(keys.nwskey, keys.appskey)
+        lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': keys.devaddr, 'fcnt': 1, 'data': list(map(ord, 'Python rules always!')) })
+
+        self.write_payload(lorawan.to_raw())
+        self.set_mode(MODE.TX)
         while True:
-            sleep(.5)
+            sleep(1)
 
 
 # Init
-lora = LoRaWANrcv(False)
+lora = LoRaWanSystem(False)
 
 # Setup
 lora.set_mode(MODE.SLEEP)
-lora.set_dio_mapping([0] * 6)
+lora.set_dio_mapping([1, 0, 0, 0, 0, 0])
 lora.set_freq(868.1)
 lora.set_pa_config(pa_select=1)
 lora.set_spreading_factor(7)
+lora.set_pa_config(max_power=0x0F, output_power=0x0E)
 lora.set_sync_word(0x34)
 lora.set_rx_crc(True)
 
@@ -62,11 +82,15 @@ print(lora)
 assert(lora.get_agc_auto_on() == 1)
 
 try:
-    print("Waiting for incoming LoRaWAN messages\n")
-    lora.start()
+    print("Sending LoRaWAN message\n")
+    lora.do_send()
+    sleep(0.1)
+    lora.set_mode(MODE.SLEEP)
+
 except KeyboardInterrupt:
     sys.stdout.flush()
     print("\nKeyboardInterrupt")
+
 finally:
     sys.stdout.flush()
     lora.set_mode(MODE.SLEEP)

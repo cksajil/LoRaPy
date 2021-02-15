@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+#
+# not tested yet.
+
 import sys
 import argparse
 from time import sleep
