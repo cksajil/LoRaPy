@@ -2,10 +2,9 @@
 
 ![Language: Python](https://img.shields.io/badge/language-Python3-blue)
 ![TTN: v2](https://img.shields.io/badge/TTN-v2-success)
+![TTN: v3](https://img.shields.io/badge/TTN-v3-success)
 ![Adafruit: 4074](https://img.shields.io/badge/Adafruit-4074-success)
 ![Lora: 868MHz](https://img.shields.io/badge/Lora-868MHz-success)
-
-![TTN: v3](https://img.shields.io/badge/TTN-v3%20in%20progress-yellow)
 
 This is an improved LoRaWAN v1.0 implementation in python.
 
