@@ -72,15 +72,26 @@ import time
 def receive_callback(payload):
     print(payload)
 
-
+"""
+LoRaPy takes
+    :param dev_addr: list. The "Device address" from your device, given by thethings.network.
+    :param nw_key: list. The "NwkSKey" from your device, given by thethings.network.
+    :param app_key: list. The "AppSKey" from your device, given by thethings.network.
+    :param verbose: bool. True if verbose informations should be printed to the console.
+    :param callback: function. Callback-function to handle downlinks out of the the things stack.
+""" 
 lora = LoRaPy(keys.devaddr, keys.nwskey, keys.appskey, True, receive_callback)
 
 while True:
+    """
+    lora.send(message: string, spreading_factor: integer)
+    """
     lora.send('this is your payload-string', 7)
     time.sleep(900)
 ```
 
 ### Downlink check for The Thing Stack (v3)
+
 ```python
 from LoRaPy.lorapy import LoRaPy
 import keys
