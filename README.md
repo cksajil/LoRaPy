@@ -25,6 +25,7 @@ You can find the access to the [Helium Network](https://helium.com) in the repos
 
 ## First Steps
 
+1. Install relevant libraries: [adafruit instructions](https://learn.adafruit.com/adafruit-radio-bonnets/rfm69-raspberry-pi-setup)
 1. Rename `keys_example.py` to `keys.py` and enter your device information from the [TTN Console](https://console.thethingsnetwork.org/applications).
 1. Setup your Raspberry Pi
 1. Connect the Adafruit Lora Bonnet
